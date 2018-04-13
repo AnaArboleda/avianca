@@ -21,3 +21,53 @@ CREATE USER dba_user_avianca
     QUOTA UNLIMITED ON avianca;
 
 GRANT DBA, CONNECT TO dba_user_avianca;
+
+--5. Create 2 profiles. (0.125)
+    --a. Profile 1: "clerk" password life 40 days, one session per user, 10 minutes idle, 4 failed login
+        --attempts
+    CREATE PROFILE PRF_cleck LIMIT
+        SESSIONS_PER_USER    1
+        PASSWORD_LIFE_TIME  40
+        IDLE_TIME           10
+        FAILED_LOGIN_ATTEMPTS   4;
+
+
+    --b. Profile 3: "development" password life 100 days, two session per user, 30 minutes idle, no
+        --failed login attempts
+    CREATE PROFILE PRF_development LIMIT
+        SESSIONS_PER_USER    2
+        PASSWORD_LIFE_TIME  100
+        IDLE_TIME           30;
+        
+--6. Create 4 users, assign them the tablespace "avianca?"; 2 of them should have the clerk profile and the
+--remaining the development profile, all the users should be allow to connect to the database. (0.125)
+    CREATE USER clerk_user1
+    IDENTIFIED BY user1
+    PROFILE PRF_cleck
+    DEFAULT TABLESPACE avianca;
+    --
+    CREATE USER clerk_user2
+    IDENTIFIED BY user1
+    PROFILE PRF_cleck
+    DEFAULT TABLESPACE avianca;
+    --   
+    CREATE USER development_user1
+    IDENTIFIED BY user1
+    PROFILE PRF_development
+    QUOTA UNLIMITED ON avianca
+    ACCOUNT UNLOCK
+    DEFAULT TABLESPACE avianca;
+    --
+    CREATE USER development_user2
+    IDENTIFIED BY user1
+    PROFILE PRF_development
+    DEFAULT TABLESPACE avianca;
+--ADICIONAR PRIVIEGIO PARA CONECTAR Y CREAR TABLAS.
+    GRANT CREATE SESSION, CREATE TABLE TO development_user1;
+    
+--7. Lock one user associate with clerk profile (0.125)
+    ALTER USER clerk_user2
+    IDENTIFIED BY user1
+    DEFAULT TABLESPACE avianca
+    PROFILE PRF_cleck
+    ACCOUNT LOCK;
