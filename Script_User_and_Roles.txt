@@ -11,3 +11,13 @@ CREATE UNDO TABLESPACE undo_avianca
 
 --3. Set the undo tablespace to be used in the system 
 ALTER SYSTEM SET UNDO_TABLESPACE = df_undo_avianca;
+
+--4. Create a DBA user (with the role DBA) and assign it to the tablespace called "avianca", 
+-- this user has unlimited space on the tablespace (The user should have permission to connect) 
+  
+CREATE USER dba_user_avianca
+    IDENTIFIED BY dba_user_avianca
+    DEFAULT TABLESPACE avianca
+    QUOTA UNLIMITED ON avianca;
+
+GRANT DBA, CONNECT TO dba_user_avianca;
