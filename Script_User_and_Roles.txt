@@ -120,7 +120,6 @@ ALTER TABLE Airport
 ADD FOREIGN KEY (Id_city)
 REFERENCES Cities(city_Id);
 
-
 CREATE TABLE Aircrews(
 	aircrew_Id                  INT NOT NULL PRIMARY KEY,
 	Id_type_aircrew             INT NOT NULL,
@@ -142,14 +141,6 @@ ALTER TABLE Aircrews
 ADD FOREIGN KEY (Id_type_aircrew)
 REFERENCES Type_Aircrew(type_aircrew_Id);
 
-
-
-CREATE TABLE Status(
-	status_Id   INT NOT NULL PRIMARY KEY,
-	description VARCHAR2(50) NULL
-);
-
-
 CREATE TABLE Aircrew_Detail(
 	pilot_Info_Id                   INT NOT NULL PRIMARY KEY,
 	Id_aircrew                      INT NULL,
@@ -158,7 +149,6 @@ CREATE TABLE Aircrew_Detail(
 	TypeLicense                     VARCHAR2(50) NULL,
 	Charge                          VARCHAR2(50) NULL
 );
-
 
 CREATE TABLE Type_Aircrew(
 	type_aircrew_Id INT NOT NULL PRIMARY KEY,
@@ -179,7 +169,6 @@ CREATE TABLE Passengers (
 ALTER TABLE Passengers 
 ADD FOREIGN KEY (id_city)
 REFERENCES Cities(City_id);
-
 
 CREATE TABLE Confirmation_CheckIn (
   id_confirmation      INT NOT NULL PRIMARY KEY,
@@ -264,20 +253,18 @@ CREATE TABLE AirCrew_Confirm (
 );
 
 ALTER TABLE AirCrew_Confirm
-ADD FOREIGN KEY ( id_aircrew_confirm)
-REFERENCES Aircraft(id_aircraft);
-
-ALTER TABLE AirCrew_Confirm
 ADD FOREIGN KEY (id_aircrew_pilot)
 REFERENCES Aircrew_Detail(pilot_info_id);
 
-CREATE TABLE LogsFlight (
+CREATE TABLE Logs (
   id_log     INT NOT NULL PRIMARY KEY,
-  Time_stamp VARCHAR2(50) NULL,
-  UTC_time   VARCHAR2(255),
-  Latitude   VARCHAR2(30) NULL,
-  Length     VARCHAR2(30) NULL,
-  Altitude   VARCHAR2(50) NULL,
-  Speed      VARCHAR2(50) NULL,
-  Address    VARCHAR2(255) NULL
+  time_stamp VARCHAR2(50) NULL,
+  utc_time   VARCHAR2(255),
+  Callsing   VARCHAR2(255),
+  latitude   VARCHAR2(30) NULL,
+  length     VARCHAR2(30) NULL,
+  altitude   VARCHAR2(50) NULL,
+  speed      VARCHAR2(50) NULL,
+  address    VARCHAR2(255) NULL,
+  id_fligth  INT NULL
 );
