@@ -71,3 +71,213 @@ GRANT DBA, CONNECT TO dba_user_avianca;
     DEFAULT TABLESPACE avianca
     PROFILE PRF_cleck
     ACCOUNT LOCK;
+    
+--8. Create tables with its columns according to your normalization.
+    --i. If you are using Oracle 11g: Create sequences for every primary key.
+    --ii. If you are using Oracle 12c: Use identity columns.
+    --b. Create primary and foreign keys.
+    --c. Insert (Use www.generatedata.com and generate a single script using sql developer to export all tables with its rows):
+        --i. 500 pilots
+        --ii. 2000 flight attendants
+        --iii. All flights departing from Medellin according to the table with the schedule above
+        --iv. Upload the info provided in the log for the Flight_AV120.csv
+
+CREATE TABLE Aircrafts (
+  aircraft_Id      INT NOT NULL PRIMARY KEY, -- GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1) PRIMARY KEY,
+  registration     VARCHAR2(50) NOT NULL,
+  Id_type_aircraft INT NOT NULL, --CONSTRAINT FK_Aircrafts_Type_Aircraft REFERENCES Type_Aircraft(type_Id),
+  serial_number    INT NOT NULL,
+  age              VARCHAR2(50) NOT NULL
+  );
+
+CREATE TABLE Type_Aircraft (
+	type_Id		INT NOT NULL PRIMARY KEY, -- GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1) PRIMARY KEY,
+	description VARCHAR2(50) NOT NULL,
+	code    	VARCHAR2(50) NOT NULL
+);
+
+ALTER TABLE Aircrafts 
+ADD FOREIGN KEY (Id_type_aircraft)
+REFERENCES Type_Aircraft(type_Id);
+
+
+CREATE TABLE Cities(
+	city_Id      INT NOT NULL PRIMARY KEY,
+	description  VARCHAR2(50) NOT NULL,
+	country_name VARCHAR2(50) NOT NULL
+);
+
+CREATE TABLE Airport(
+	airport_Id          INT NOT NULL PRIMARY KEY,
+	Id_city             INT NOT NULL,
+	airpot_abbreviation VARCHAR2(50) NOT NULL,
+	name_airport        VARCHAR2(50) NOT NULL,
+	latidude            VARCHAR2(50) NOT NULL,
+	logitude            VARCHAR2(50) NOT NULL
+);
+
+ALTER TABLE Airport 
+ADD FOREIGN KEY (Id_city)
+REFERENCES Cities(city_Id);
+
+
+CREATE TABLE Aircrews(
+	aircrew_Id                  INT NOT NULL PRIMARY KEY,
+	Id_type_aircrew             INT NOT NULL,
+	first_name                  VARCHAR2(50) NOT NULL,
+	last_name                   VARCHAR2(50) NULL,
+	gender                      VARCHAR2(10) NULL,
+	date_of_birth               DATE NULL,
+	seniority                   NUMERIC(18, 0) NULL,
+	date_last_training datetime DATE NULL,
+	recidence_address           VARCHAR2(50) NULL,
+	Email                       VARCHAR2(50) NULL,
+	cell_phone                  VARCHAR2(15) NULL,
+	rest_hours_last_flight      NUMERIC(18, 0) NULL,
+	status                      NUMERIC(18, 0) NULL,
+	current_location            NUMERIC(18, 0) NULL
+);
+
+ALTER TABLE Aircrews 
+ADD FOREIGN KEY (Id_type_aircrew)
+REFERENCES Type_Aircrew(type_aircrew_Id);
+
+
+
+CREATE TABLE Status(
+	status_Id   INT NOT NULL PRIMARY KEY,
+	description VARCHAR2(50) NULL
+);
+
+
+CREATE TABLE Aircrew_Detail(
+	pilot_Info_Id                   INT NOT NULL PRIMARY KEY,
+	Id_aircrew                      INT NULL,
+	level_english                   VARCHAR2(50) NULL,
+	amount_accumulated_flight_hours NUMERIC(18, 0) NULL,
+	TypeLicense                     VARCHAR2(50) NULL,
+	Charge                          VARCHAR2(50) NULL
+);
+
+
+CREATE TABLE Type_Aircrew(
+	type_aircrew_Id INT NOT NULL PRIMARY KEY,
+	description     VARCHAR2(50) NULL
+);
+
+CREATE TABLE Passengers (
+  id_Contact          INT NOT NULL PRIMARY KEY,
+  first_name          VARCHAR2(255) NULL,
+  last_name           VARCHAR2(255) NULL,
+  Document_type       VARCHAR2(50) NULL,
+  dentfication_number VARCHAR2(50) NULL,
+  id_city             INT NOT NULL,
+  Email               VARCHAR2(255) NULL,
+  phone_number        VARCHAR2(100) NULL
+);
+
+ALTER TABLE Passengers 
+ADD FOREIGN KEY (id_city)
+REFERENCES Cities(City_id);
+
+
+CREATE TABLE Confirmation_CheckIn (
+  id_confirmation      INT NOT NULL PRIMARY KEY,
+  confirmation_type    VARCHAR2(50) NULL,
+  State                VARCHAR2(255) NULL,
+  id_flight_confirm    INT NULL,
+  id_passenger         INT NULL,
+  id_emergency_contact INT NULL
+);
+
+ALTER TABLE Confirmation_CheckIn 
+ADD FOREIGN KEY (id_flight_confirm )
+REFERENCES Flights_Confirmed (id_fligth_confirm);
+
+ALTER TABLE Confirmation_CheckIn 
+ADD FOREIGN KEY (id_passenger)
+REFERENCES Passengers (id_Contact);
+
+ALTER TABLE Confirmation_CheckIn 
+ADD FOREIGN KEY (id_emergency_contact)
+REFERENCES Emergency_Contact(Contact);
+
+CREATE TABLE Routes (
+  id_routes              INT NOT NULL PRIMARY KEY,
+  id_airport_origin      INT NOT NULL,
+  id_airport_destination INT NOT NULL,
+  distance               VARCHAR2(50) NULL,
+  id_flight              INT NULL,
+  aircraft_required      VARCHAR2(50) NULL,
+  weeidyfrecuendy        VARCHAR2(50) NULL,
+  quantity_average_hours VARCHAR2(50) NULL,
+  crew_required          VARCHAR2(50) NULL
+);
+
+ALTER TABLE Routes 
+ADD FOREIGN KEY (id_fligth)
+REFERENCES Fligth(id_flight);
+
+ALTER TABLE Routes 
+ADD FOREIGN KEY (id_airport_origin)
+REFERENCES Airport(airport_id);
+
+ALTER TABLE Routes 
+ADD FOREIGN KEY (id_airport_destination)
+REFERENCES Airport(airport_id);
+
+CREATE TABLE Route_Itinerary (
+  id_route_itinerary INT NOT NULL PRIMARY KEY,
+  id_route           INT NULL,
+  hour               NUMERIC(18,0) NULL,
+  date               DATE,
+  state              VARCHAR2(50) NULL
+);
+
+ALTER TABLE Route_Itinerary 
+ADD FOREIGN KEY (id_route)
+REFERENCES Routes(id_routes);
+
+CREATE TABLE Flights_Confirmed (
+  id_fligth_confirm     INT NOT NULL PRIMARY KEY,
+  id_aircrew_confirm    INT NULL,
+  actual_departure_time DATE(50) NULL,
+  hour_estimate_arrive  VARCHAR2(50) NULL,
+  real_duration         VARCHAR2(50) NULL,
+  id_assigned_aircraft  INT NULL,
+  passenger_amount      INT NULL,
+  if_flight             INT NULL
+);
+
+ALTER TABLE Flights_Confirmed  
+ADD FOREIGN KEY (id_aircrew_confirm)
+REFERENCES AirCrew_Confirm(id_aircrew_confirm);
+
+ALTER TABLE Flights_Confirmed  
+ADD FOREIGN KEY (if_flight)
+REFERENCES Flight(id_fligth);
+
+CREATE TABLE AirCrew_Confirm (
+  id_aircrew_confirm INT NOT NULL PRIMARY KEY,
+  id_aircrew_pilot   VARCHAR2(50) NULL,
+  id_aircrew_copilot VARCHAR2(50) NULL
+);
+
+ALTER TABLE AirCrew_Confirm
+ADD FOREIGN KEY ( id_aircrew_confirm)
+REFERENCES Aircraft(id_aircraft);
+
+ALTER TABLE AirCrew_Confirm
+ADD FOREIGN KEY (id_aircrew_pilot)
+REFERENCES Aircrew_Detail(pilot_info_id);
+
+CREATE TABLE LogsFlight (
+  id_log     INT NOT NULL PRIMARY KEY,
+  Time_stamp VARCHAR2(50) NULL,
+  UTC_time   VARCHAR2(255),
+  Latitude   VARCHAR2(30) NULL,
+  Length     VARCHAR2(30) NULL,
+  Altitude   VARCHAR2(50) NULL,
+  Speed      VARCHAR2(50) NULL,
+  Address    VARCHAR2(255) NULL
+);
