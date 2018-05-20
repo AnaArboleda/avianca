@@ -720,3 +720,25 @@ INNER JOIN AIRCREWS A
 WHERE FC.STATUS_FLIGHTS_CONFIRMED = 'confirmado'
 
 -- SELECT * FROM Personal_Asignado;
+
+/* ----------------------------------------------------------PUNTO N°5 -------------------------------------------------------------------------------
+Construya una vista que dado un aeropuerto origen y un aeropuerto destino (Ruta), muestre todos los vuelos programados 
+desde el momento en que se está ejecutando el query hasta 2 semanas después, debe mostrar el número del vuelo, la hora 
+y la fecha programada de salida 
+*/
+CREATE OR REPLACE VIEW VUELOS_PROGRAMADOS (ID_FLIGHT,ACTUAL_DEPARTURE_TIME,ESTIMATED_DATE_DEPARTURE,ID_FLIGTH_CONFIRM,ID_AIRPORT_ORIGIN,ID_AIRPORT_DESTINATION) 
+AS
+SELECT FC.ID_FLIGHT,
+       FC.ACTUAL_DEPARTURE_TIME,
+       FC.ESTIMATED_DATE_DEPARTURE,  
+       FC.ID_FLIGTH_CONFIRM,
+       RO.ID_AIRPORT_ORIGIN,
+       RO.ID_AIRPORT_DESTINATION
+FROM FLIGHTS_CONFIRMED FC
+INNER JOIN FLIGHT FI 
+        ON FI.ID_FLIGHT = FC.ID_FLIGHT
+INNER JOIN ROUTES RO 
+        ON RO.ID_ROUTES = FI.ID_FLIGHT_ROUTES
+WHERE TRUNC(FC.ESTIMATED_DATE_DEPARTURE) BETWEEN (SYSDATE) AND TRUNC(SYSDATE+15)
+
+--  SELECT * FROM VUELOS_PROGRAMADOS;
