@@ -698,6 +698,52 @@ Insert into CONFIRMATION_CHECKIN (ID_CONFIRMATION,CONFIRMATION_TYPE,STATE,FIRST_
 
 
 /* ----------------------------------------------------------PUNTO N°4 -------------------------------------------------------------------------------
+Construya un procedimiento que permita hacer el checking de los pasajeros, para esto se debe pasar
+el id del vuelo confirmado, el id del pasajero y el tipo de silla que tiene (Ejecutiva, Económica)
+*/
+
+
+CREATE OR REPLACE PROCEDURE CheckIn_Pasajeros(id_vuelo_congfirm IN INT, id_Pasajero IN INT, Tipo_Silla IN NVARCHAR2) -- Se define la creación y argumentos del procedimiento almacenado 
+AS
+--Declaración de variables locales 
+--Cant_Silla_Ejecutiva int;
+--Cant_Silla_Economica int;
+BEGIN    
+     
+    
+    --Almacena en la tabla CONFIRMATION_CHECKIN los datos del pasajero y vuelo.
+    Insert into CONFIRMATION_CHECKIN (ID_CONFIRMATION
+                                    ,CONFIRMATION_TYPE
+                                    ,STATE
+                                    ,FIRST_NAME
+                                    ,LAST_NAME
+                                    ,EMAIL
+                                    ,PHONE_NUMBER
+                                    ,ID_FLIGHT_CONFIRM
+                                    ,ID_PASSENGER)                             
+                            values ((select max(id_confirmation) +1 from Confirmation_CheckIn) 
+                                   ,'Virtual'
+                                   ,'Chek-in'           
+                                   ,(SELECT first_name FROM Passengers WHERE id_Contact = id_Pasajero)
+                                   ,(SELECT last_name FROM Passengers WHERE id_Contact = id_Pasajero)
+                                   ,(SELECT Email FROM Passengers WHERE id_Contact = id_Pasajero)
+                                   ,(SELECT phone_number FROM Passengers WHERE id_Contact = id_Pasajero)
+                                   ,(select max(ID_FLIGTH_CONFIRM) FROM FLIGHTS_CONFIRMED) 
+                                   ,id_Pasajero);
+END; 
+
+--Rutina anonima para el llamado del procedimiento almacenado
+/*
+BEGIN 
+    CheckIn_Pasajeros(4, 10, 'Economica');
+    CheckIn_Pasajeros(2, 5, 'Ejecutiva');
+END;
+
+SELECT * FROM CONFIRMATION_CHECKIN
+*/
+
+
+/* ----------------------------------------------------------PUNTO N°4 -------------------------------------------------------------------------------
 Construya una vista que dado un id de un vuelo pasado o confirmado, muestre el listado de personal asignado al vuelo, 
 tanto pilotos como auxiliares de vuelo). Debe haber una columna que identifique quien es el piloto, quién es el copiloto y 
 quienes son los auxiliares de vuelo.
@@ -744,9 +790,8 @@ WHERE TRUNC(FC.ESTIMATED_DATE_DEPARTURE) BETWEEN (SYSDATE) AND TRUNC(SYSDATE+15)
 --  SELECT * FROM VUELOS_PROGRAMADOS;
 
 /* ----------------------------------------------------------PUNTO N°6-------------------------------------------------------------------------------
-
-----EXPLAIN PLAN PARA LA VISTA VUELOS_PROGRAMADOS
-
+EXPLAIN PLAN PARA LA VISTA VUELOS_PROGRAMADOS
+*/
 EXPLAIN PLAN SET STATEMENT_ID = 'EXP_VUELOS_PROGRAMADOS' FOR
 SELECT * FROM VUELOS_PROGRAMADOS;
 
@@ -771,7 +816,3 @@ EXPLAIN PLAN SET STATEMENT_ID = 'Exp_Personal_Asignado_1' FOR
 SELECT * FROM Personal_Asignado;
 
 SELECT * FROM TABLE(dbms_xplan.display('PLAN_TABLE', 'Exp_Personal_Asignado_1' , 'TYPICAL'));
-
-
-
-
