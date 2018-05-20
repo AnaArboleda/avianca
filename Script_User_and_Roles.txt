@@ -742,3 +742,26 @@ INNER JOIN ROUTES RO
 WHERE TRUNC(FC.ESTIMATED_DATE_DEPARTURE) BETWEEN (SYSDATE) AND TRUNC(SYSDATE+15)
 
 --  SELECT * FROM VUELOS_PROGRAMADOS;
+
+/* ----------------------------------------------------------PUNTO N°6-------------------------------------------------------------------------------
+
+----EXPLAIN PLAN PARA LA VISTA VUELOS_PROGRAMADOS
+
+EXPLAIN PLAN SET STATEMENT_ID = 'EXP_VUELOS_PROGRAMADOS' FOR
+SELECT * FROM VUELOS_PROGRAMADOS;
+
+SELECT * FROM TABLE(dbms_xplan.display('PLAN_TABLE', 'EXP_VUELOS_PROGRAMADOS' , 'TYPICAL'));
+
+-- No se evidencia un costo elevado, pero para efectos de visualizar como se comporta 
+-- con un segundo explainplan se le creara un indice a ID_FLIGHT de la tabla FLIGHTS_CONFIRMED,
+-- Pues esta tabla la que contienen la mayor trazabilidad.
+
+CREATE INDEX ID_FLIGHT ON FLIGHTS_CONFIRMED (ID_FLIGHT);
+
+--Ahora revisar s comportamieto con la creacion del indice
+
+EXPLAIN PLAN SET STATEMENT_ID = 'EXP_VUELOS_PROGRAMADOS_2' FOR
+SELECT * FROM VUELOS_PROGRAMADOS;
+
+SELECT * FROM TABLE(dbms_xplan.display('PLAN_TABLE', 'EXP_VUELOS_PROGRAMADOS_2' , 'TYPICAL'));
+
