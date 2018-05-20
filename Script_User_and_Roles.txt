@@ -816,3 +816,9 @@ EXPLAIN PLAN SET STATEMENT_ID = 'Exp_Personal_Asignado_1' FOR
 SELECT * FROM Personal_Asignado;
 
 SELECT * FROM TABLE(dbms_xplan.display('PLAN_TABLE', 'Exp_Personal_Asignado_1' , 'TYPICAL'));
+
+
+/*
+URL video: 
+https://correoitmedu-my.sharepoint.com/:f:/g/personal/sirleyhenao94174_correo_itm_edu_co/Em423GruDvFDjhuM0Q_0OVMBwGHg0qTyKskzobd7PS5Eig?e=ySec0c
+*/
